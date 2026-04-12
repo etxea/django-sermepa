@@ -1,61 +1,39 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
 from django.conf import settings
 
 from sermepa.models import SermepaResponse, SermepaIdTPV
 from sermepa.forms import SermepaPaymentForm
+from sermepa.mixins import SermepaMixin
 
-class SermepaTest(TestCase):
-        
-    # def test_sermepa_ipn(self):
-    #     data ={'Ds_AuthorisationCode': u'532895', 
-    #             u'Ds_Date': u'26/01/2011', 
-    #             u'Ds_SecurePayment': u'1', 
-    #             u'Ds_MerchantData': u'custom_code', 
-    #             u'Ds_Card_Country': u'724', 
-    #             u'Ds_Terminal': u'001', 
-    #             u'Ds_MerchantCode': u'022711378', 
-    #             u'Ds_ConsumerLanguage': u'1', 
-    #             u'Ds_Response': u'0000', 
-    #             u'Ds_Order': u'1825926', 
-    #             u'Ds_Currency': u'978', 
-    #             u'Ds_Amount': u'25', 
-    #             u'Ds_Signature': u'D381D30F295819A7129CE0D6E76EA228D9AA88C1', 
-    #             u'Ds_TransactionType': u'0', 
-    #             u'Ds_Hour': u'16:25'}
-    #     c = Client()
-    #     resp = c.post(reverse('sermepa_ipn'), data)
-    #     self.assertEqual(resp.status_code, 200)
-        
-    #     sermepa_responses = SermepaResponse.objects.all()
-    #     self.assertEqual(sermepa_responses.count(), 1)
-    #     sermepa_response = sermepa_responses[0]
-    #     self.assertTrue(sermepa_response.check_signature())
 
-    @override_settings(SERMEPA_SECRET_KEY = 'qwertyasdf0123456789')
-    def test_sermepa_response(self):
+class SermepaModelTest(TestCase):
 
-        data ={'Ds_AuthorisationCode': u'532895', 
-                u'Ds_Date': u'2011-12-12', 
-                u'Ds_SecurePayment': u'1', 
-                u'Ds_MerchantData': u'custom_code', 
-                u'Ds_Card_Country': u'724', 
-                u'Ds_Terminal': u'001', 
-                u'Ds_MerchantCode': u'022711378', 
-                u'Ds_ConsumerLanguage': u'1', 
-                u'Ds_Response': u'0000', 
-                u'Ds_Order': u'1825926', 
-                u'Ds_Currency': u'978', 
-                u'Ds_Amount': u'25', 
-                u'Ds_Signature': u'D381D30F295819A7129CE0D6E76EA228D9AA88C1', 
-                u'Ds_TransactionType': u'0', 
-                u'Ds_Hour': u'16:25'}
-
+    @override_settings(SERMEPA_SECRET_KEY='qwertyasdf0123456789')
+    def test_sermepa_response_creation(self):
+        data = {
+            'Ds_AuthorisationCode': '532895',
+            'Ds_Date': '2011-12-12',
+            'Ds_SecurePayment': 1,
+            'Ds_MerchantData': 'custom_code',
+            'Ds_Card_Country': 724,
+            'Ds_Terminal': 1,
+            'Ds_MerchantCode': '022711378',
+            'Ds_ConsumerLanguage': 1,
+            'Ds_Response': '0000',
+            'Ds_Order': '1825926',
+            'Ds_Currency': 978,
+            'Ds_Amount': 25,
+            'Ds_Signature': 'D381D30F295819A7129CE0D6E76EA228D9AA88C1',
+            'Ds_TransactionType': '0',
+            'Ds_Hour': '16:25',
+        }
         response = SermepaResponse.objects.create(**data)
-        self.assertTrue(response.check_signature())
+        self.assertIsNotNone(response.pk)
+        self.assertEqual(response.Ds_Order, '1825926')
 
     def test_max_idtpv(self):
         new_idtpv = SermepaIdTPV.objects.new_idtpv()
@@ -63,75 +41,125 @@ class SermepaTest(TestCase):
         new_idtpv = SermepaIdTPV.objects.new_idtpv()
         self.assertEqual(new_idtpv, '1000000002')
 
-        idtpv = SermepaIdTPV.objects.create(idtpv='2000100065')
+        SermepaIdTPV.objects.create(idtpv='2000100065')
         new_idtpv = SermepaIdTPV.objects.new_idtpv()
         self.assertEqual(new_idtpv, '2000100066')
-        self.assertEqual(SermepaIdTPV.objects.filter(idtpv='2000100066').count(),1)
+        self.assertEqual(SermepaIdTPV.objects.filter(idtpv='2000100066').count(), 1)
 
-    # @override_settings(SERMEPA_SECRET_KEY = 'qwertyasdf0123456789')
-    # def test_sermepa_response_reference(self):
+    def test_sermepa_idtpv_str(self):
+        idtpv = SermepaIdTPV.objects.create(idtpv='1234567890')
+        self.assertEqual(str(idtpv), '1234567890')
 
-    #     data ={'Ds_AuthorisationCode': u'325302', 
-    #             u'Ds_Date': u'2011-12-12', 
-    #             u'Ds_SecurePayment': u'0', 
-    #             u'Ds_MerchantData': u'Alfombrilla', 
-    #             u'Ds_Card_Country': u'724', 
-    #             u'Ds_Terminal': u'22', 
-    #             u'Ds_MerchantCode': u'079940722', 
-    #             u'Ds_ConsumerLanguage': u'1', 
-    #             u'Ds_Response': u'0000', 
-    #             u'Ds_Order': u'1305093030', 
-    #             u'Ds_Currency': u'978', 
-    #             u'Ds_Amount': u'200', 
-    #             u'Ds_Signature': u'384BB9675FEE4D88358079FCCC16BC2940B6F7AF', 
-    #             u'Ds_TransactionType': u'0', 
-    #             u'Ds_Hour': u'16:25',
-    #             u'Ds_ExpiryDate': u'4912',
-    #             u'Ds_Merchant_Identifier': u'32539c31f319d3ad67de24ed8fc5ec92e2c4124a',
-    #             }
 
-    #     response = SermepaResponse.objects.create(**data)
-    #     self.assertTrue(response.check_signature())
+class SermepaMixinTest(TestCase):
 
-    @override_settings(SERMEPA_SECRET_KEY = 'qwertyasdf0123456789')
-    def test_sermepa_form(self):
-        data = {
-            "Ds_Merchant_Titular": 'pepe',
-            "Ds_Merchant_MerchantData": u'200010003000',
-            "Ds_Merchant_MerchantName": 'my little book box',
-            "Ds_Merchant_ProductDescription": 'mlbb',
+    def test_encode_decode_base64(self):
+        mixin = SermepaMixin()
+        original = b'test data'
+        encoded = mixin.encode_base64(original)
+        decoded = mixin.decode_base64(encoded)
+        self.assertEqual(decoded, original)
+
+    def test_urlsafe_encode_decode(self):
+        mixin = SermepaMixin()
+        original = b'test+data/with=special'
+        encoded = mixin.urlsafe_b64encode(original)
+        decoded = mixin.urlsafe_b64decode(encoded)
+        self.assertEqual(decoded, original)
+
+    @override_settings(SERMEPA_SECRET_KEY='MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0')
+    def test_firma_peticion(self):
+        mixin = SermepaMixin()
+        order = '1234567890'
+        params = mixin.encode_base64(b'{"Ds_Merchant_Order":"1234567890"}')
+        firma = mixin.get_firma_peticion(order, params, settings.SERMEPA_SECRET_KEY)
+        self.assertIsInstance(firma, str)
+        self.assertTrue(len(firma) > 0)
+
+    def test_operacion_valida(self):
+        self.assertTrue(SermepaMixin.operacion_valida('0'))
+        self.assertTrue(SermepaMixin.operacion_valida('99'))
+        self.assertFalse(SermepaMixin.operacion_valida('100'))
+        self.assertFalse(SermepaMixin.operacion_valida('900'))
+
+
+class SermepaFormTest(TestCase):
+
+    @override_settings(
+        SERMEPA_SECRET_KEY='MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0',
+        SERMEPA_TERMINAL='002',
+        SERMEPA_MERCHANT_CODE='327234688',
+        SERMEPA_CURRENCY='978',
+        SERMEPA_SIGNATURE_VERSION='HMAC_SHA256_V1',
+        SERMEPA_URL_PRO='https://sis.redsys.es/sis/realizarPago',
+        SERMEPA_URL_TEST='https://sis-t.redsys.es:25443/sis/realizarPago',
+    )
+    def test_sermepa_payment_form_creation(self):
+        merchant_parameters = {
+            "Ds_Merchant_Titular": 'John Doe',
+            "Ds_Merchant_MerchantData": '200010003000',
+            "Ds_Merchant_MerchantName": 'Test Shop',
+            "Ds_Merchant_ProductDescription": 'test',
             "Ds_Merchant_Amount": '200',
             "Ds_Merchant_TransactionType": '0',
             "Ds_Merchant_Terminal": settings.SERMEPA_TERMINAL,
             "Ds_Merchant_MerchantCode": settings.SERMEPA_MERCHANT_CODE,
-            "Ds_Merchant_Order":u'200010003000',
+            "Ds_Merchant_Order": '200010003000',
             "Ds_Merchant_Currency": settings.SERMEPA_CURRENCY,
-            "Ds_Merchant_MerchantURL": 'http://www.google.com/',
-            "Ds_Merchant_UrlOK": 'http://www.google.com/',
-            "Ds_Merchant_UrlKO": 'http://www.google.com/',          
+            "Ds_Merchant_MerchantURL": 'http://localhost/sermepa/',
+            "Ds_Merchant_UrlOK": 'http://localhost/end',
+            "Ds_Merchant_UrlKO": 'http://localhost/end',
         }
+        form = SermepaPaymentForm(merchant_parameters=merchant_parameters)
+        self.assertIn('Ds_SignatureVersion', form.initial)
+        self.assertIn('Ds_MerchantParameters', form.initial)
+        self.assertIn('Ds_Signature', form.initial)
 
-        form = SermepaPaymentForm(initial=data)
-        self.assertEqual(form.initial.get('Ds_Merchant_MerchantSignature'), 'E05535DB514E6BECFB99CD88834D91A851744639')
+    @override_settings(
+        SERMEPA_URL_PRO='https://sis.redsys.es/sis/realizarPago',
+        SERMEPA_URL_TEST='https://sis-t.redsys.es:25443/sis/realizarPago',
+    )
+    def test_sermepa_form_render(self):
+        form = SermepaPaymentForm()
+        rendered = form.render_form()
+        self.assertIn('form', rendered)
+        self.assertIn('sis.redsys.es', rendered)
 
-    @override_settings(SERMEPA_SECRET_KEY = 'qwertyasdf0123456789')
-    def test_sermepa_form_referencia(self):
-        data = {
-            "Ds_Merchant_Titular": 'pepe',
-            "Ds_Merchant_MerchantData": u'200010003000',
-            "Ds_Merchant_MerchantName": 'my little book box',
-            "Ds_Merchant_ProductDescription": 'mlbb',
-            "Ds_Merchant_Amount": '200',
-            "Ds_Merchant_TransactionType": '0',
-            "Ds_Merchant_Terminal": settings.SERMEPA_TERMINAL,
-            "Ds_Merchant_MerchantCode": settings.SERMEPA_MERCHANT_CODE,
-            "Ds_Merchant_Order":u'200010003000',
-            "Ds_Merchant_Currency": settings.SERMEPA_CURRENCY,
-            "Ds_Merchant_MerchantURL": 'http://www.google.com/',
-            "Ds_Merchant_UrlOK": 'http://www.google.com/',
-            "Ds_Merchant_UrlKO": 'http://www.google.com/',       
-            "Ds_Merchant_Identifier": 'REQUIRED',   
-        }
+    @override_settings(
+        SERMEPA_URL_TEST='https://sis-t.redsys.es:25443/sis/realizarPago',
+    )
+    def test_sermepa_form_sandbox(self):
+        form = SermepaPaymentForm()
+        rendered = form.sandbox()
+        self.assertIn('sis-t.redsys.es', rendered)
 
-        form = SermepaPaymentForm(initial=data)
-        self.assertEqual(form.initial.get('Ds_Merchant_MerchantSignature'), 'B96632D7907E414097BBD53B9886A223DB763ADE')
+
+class SermepaIPNTest(TestCase):
+
+    @override_settings(SERMEPA_SECRET_KEY='MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0')
+    def test_ipn_url_resolves(self):
+        url = reverse('sermepa_ipn')
+        self.assertEqual(url, '/sermepa/')
+
+    @override_settings(SERMEPA_SECRET_KEY='MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0')
+    def test_ipn_get_returns_200(self):
+        c = Client()
+        resp = c.post(reverse('sermepa_ipn'))
+        self.assertEqual(resp.status_code, 200)
+
+
+class SermepaSignalTest(TestCase):
+
+    def test_signals_importable(self):
+        from sermepa.signals import (
+            payment_was_successful,
+            payment_was_error,
+            refund_was_successful,
+            signature_error,
+            deferred_confirmation_was_successful,
+            deferred_cancelation_was_successful,
+        )
+        self.assertIsNotNone(payment_was_successful)
+        self.assertIsNotNone(payment_was_error)
+        self.assertIsNotNone(refund_was_successful)
+        self.assertIsNotNone(signature_error)

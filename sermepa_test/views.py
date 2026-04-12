@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 import random
@@ -70,10 +70,10 @@ def form(request, trans_type='0'):
 
     form = SermepaPaymentForm(initial=sermepa_dict)
     
-    return HttpResponse(render_to_response('form.html', {'form': form, 'debug': settings.DEBUG}))
+    return render(request, 'form.html', {'form': form, 'debug': settings.DEBUG})
     
 def end(request):
-    return HttpResponse(render_to_response('end.html', {}))
+    return render(request, 'end.html', {})
     
 def payment_ok(sender, **kwargs):
     pass

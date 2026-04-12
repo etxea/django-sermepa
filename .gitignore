@@ -5,6 +5,23 @@ app.ini
 .testmondata
 .tmontmp
 
+# virtualenv
+.venv/
+venv/
+env/
+
+# build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+
+# tox
+.tox/
+
+# pytest
+.pytest_cache/
+
 
 # Created by https://www.gitignore.io/api/vim,django,python,pycharm,visualstudiocode
 

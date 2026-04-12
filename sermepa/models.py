@@ -26,7 +26,7 @@ class SermepaIdTPV(models.Model):
     idtpv = models.CharField(max_length=12,)
     objects = SermepaIDPTVManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.idtpv
 
         

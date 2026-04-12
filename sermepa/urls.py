@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.urls import path
 
 from .views import sermepa_ipn
 
 
 urlpatterns = [
-    url(regex=r'^$', view=sermepa_ipn, name='sermepa_ipn'),
+    path('', sermepa_ipn, name='sermepa_ipn'),
 ]

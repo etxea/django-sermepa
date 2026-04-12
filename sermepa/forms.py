@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
 import json
 
 from django import forms
@@ -18,10 +17,9 @@ class SermepaPaymentForm(SermepaMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         merchant_parameters = kwargs.pop('merchant_parameters', None)
         secret_key = kwargs.pop('secret_key', settings.SERMEPA_SECRET_KEY)  # implementation for django_payments
-        super(SermepaPaymentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if merchant_parameters:
             json_data = json.dumps(merchant_parameters)
-            print(json_data)
             order = merchant_parameters['Ds_Merchant_Order']
             b64_params = self.encode_base64(json_data.encode())
             signature = self.get_firma_peticion(order, b64_params, secret_key)
@@ -29,7 +27,7 @@ class SermepaPaymentForm(SermepaMixin, forms.Form):
             self.initial['Ds_MerchantParameters'] = b64_params.decode('ascii')
             self.initial['Ds_Signature'] = signature
 
-    def render(self):
+    def render_form(self):
         return mark_safe(u"""<form id="tpv_form" action="%s" method="post">
             %s
             <input type="submit" name="submit" alt="Comprar ahora" value="Comprar ahora"/>
