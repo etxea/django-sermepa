@@ -156,8 +156,6 @@ class SermepaSignalTest(TestCase):
             payment_was_error,
             refund_was_successful,
             signature_error,
-            deferred_confirmation_was_successful,
-            deferred_cancelation_was_successful,
         )
         self.assertIsNotNone(payment_was_successful)
         self.assertIsNotNone(payment_was_error)

@@ -5,7 +5,6 @@ from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
-from .models import SermepaResponse
 from .mixins import SermepaMixin
 
 
