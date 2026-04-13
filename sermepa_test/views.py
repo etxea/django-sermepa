@@ -68,7 +68,7 @@ def form(request, trans_type='0'):
             # de la SermepaResponse obtenida del cobro que se quiere devolver.
         })
 
-    form = SermepaPaymentForm(initial=sermepa_dict)
+    form = SermepaPaymentForm(merchant_parameters=sermepa_dict)
     
     return render(request, 'form.html', {'form': form, 'debug': settings.DEBUG})
     

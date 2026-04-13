@@ -18,8 +18,10 @@ class SermepaPaymentForm(SermepaMixin, forms.Form):
         secret_key = kwargs.pop('secret_key', settings.SERMEPA_SECRET_KEY)  # implementation for django_payments
         super().__init__(*args, **kwargs)
         if merchant_parameters:
-            json_data = json.dumps(merchant_parameters)
-            order = merchant_parameters['Ds_Merchant_Order']
+            # Redsys expects all values as strings in JSON
+            str_params = {k: str(v) for k, v in merchant_parameters.items()}
+            json_data = json.dumps(str_params)
+            order = str_params['Ds_Merchant_Order']
             b64_params = self.encode_base64(json_data.encode())
             signature = self.get_firma_peticion(order, b64_params, secret_key)
             self.initial['Ds_SignatureVersion'] = settings.SERMEPA_SIGNATURE_VERSION
