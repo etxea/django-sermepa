@@ -30,7 +30,7 @@ Instalación
 
 1. Instala el proyecto usando pip::
 
-    pip install django-sermepa
+    pip install django-sermepa-etxea
 
    O directamente desde GitHub::
 
