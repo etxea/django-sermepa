@@ -34,7 +34,7 @@ Instalación
 
    O directamente desde GitHub::
 
-    pip install git+https://github.com/Etxea/django-sermepa
+    pip install git+https://github.com/etxea/django-sermepa
 
 2. Añádelo a INSTALLED_APPS del settings.py:
 
@@ -82,7 +82,7 @@ Uso
 
 6. Programa los listeners de las signals de OK, KO y si quieres de error:
 
- 6.1 El listener recibe un objeto de tipo `SermepaResponse <https://github.com/Etxea/django-sermepa/blob/main/sermepa/models.py>`_
+ 6.1 El listener recibe un objeto de tipo `SermepaResponse <https://github.com/etxea/django-sermepa/blob/main/sermepa/models.py>`_
  con toda la información de la operación del TPV. Puedes usar un listener que procese todos los casos, o uno por cada caso (OK y KO):
 
  .. code:: python
@@ -119,7 +119,7 @@ Uso
  ..
 
 
-7. Utiliza el form de `SermepaPaymentForm <https://github.com/Etxea/django-sermepa/blob/main/sermepa/forms.py>`_ para inicializar el botón de pago.
+7. Utiliza el form de `SermepaPaymentForm <https://github.com/etxea/django-sermepa/blob/main/sermepa/forms.py>`_ para inicializar el botón de pago.
 
  El botón de pago será un formulario POST a la url del TPV, firmado con tu clave secreta, que deberá pasar toda la información de la operación: modalidad de pago, importe (en céntimos), URLs de notificación, OK y KO, descripción, datos del comercio, identificador de tu pedido, identificador de la operación...
 
@@ -145,7 +145,7 @@ Uso
 
    2.2.2 Los cobros sucesivos son Ds_Merchant_TransactionType='0' y el Ds_Merchant_Order=idreferencia (el valor que nos han pasado en el primero cobro)
 
- **Mira el código del ejemplo** (`sermepa_test/views.py <https://github.com/Etxea/django-sermepa/blob/main/sermepa_test/views.py>`_) para más info:
+ **Mira el código del ejemplo** (`sermepa_test/views.py <https://github.com/etxea/django-sermepa/blob/main/sermepa_test/views.py>`_) para más info:
 
   .. code:: python
 

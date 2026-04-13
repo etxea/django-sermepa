@@ -42,10 +42,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Etxea/django-sermepa"
-Repository = "https://github.com/Etxea/django-sermepa"
-Issues = "https://github.com/Etxea/django-sermepa/issues"
-Changelog = "https://github.com/Etxea/django-sermepa/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/etxea/django-sermepa"
+Repository = "https://github.com/etxea/django-sermepa"
+Issues = "https://github.com/etxea/django-sermepa/issues"
+Changelog = "https://github.com/etxea/django-sermepa/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["sermepa*"]

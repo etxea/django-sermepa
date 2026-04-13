@@ -22,7 +22,7 @@ setup(
         "pyDes>=2.0.1",
         "python-dateutil",
     ],
-    url='https://github.com/Etxea/django-sermepa',
+    url='https://github.com/etxea/django-sermepa',
     author='Jon Latorre',
     author_email='info@etxea.net',
     classifiers=[
