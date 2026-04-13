@@ -228,3 +228,4 @@ tags
 
 
 # End of https://www.gitignore.io/api/vim,django,python,pycharm,visualstudiocode
+sermepa.db
